@@ -6,12 +6,16 @@
  * gcc LineDDA.c -o LineDDA -lGL -lGLU -lglut
  * 
  * Ejecucion:
+<<<<<<< HEAD
  * ./LineDDA
+>>>>>>> 16114eb955eb56ba6c8279094af0b48a43b3f9e5
  *
  * Uso:
  * Da click en cualquier parte de la pantalla y arrastra
  * el mouse para dibujar una linea, suelta el boton del mouse
+<<<<<<< HEAD
  * para crear la linea deseada.
+>>>>>>> 16114eb955eb56ba6c8279094af0b48a43b3f9e5
  *
  * Autor:
  * Romario Ramirez Calderon 1214462c
@@ -96,9 +100,11 @@ void mouseHandler(int button, int state, int x, int y)
   if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
     xi = xf = x;
     /*
+<<<<<<< HEAD
       La funcion recibe la posicion verical medida desde arriba de la ventana
       pero la ventana mide la posicion vertical desde abajo de la ventana, por lo
       tanto la posicion en la ventana es: HEIGHT - y.
+>>>>>>> 16114eb955eb56ba6c8279094af0b48a43b3f9e5
      */
     yi = yf = HEIGHT - y;
   }
@@ -112,7 +118,9 @@ void mouseMotionHandler(int x, int y)
   xf = x;
   yf = HEIGHT - y;
 
+<<<<<<< HEAD
   // Repinta la ventana
+>>>>>>> 16114eb955eb56ba6c8279094af0b48a43b3f9e5
   glutPostRedisplay();
 }
 
