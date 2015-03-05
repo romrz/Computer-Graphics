@@ -22,12 +22,6 @@
 #include <math.h>
 
 /**
- * Dimensiones de la ventana
- */
-#define WIDTH 600
-#define HEIGHT 600
-
-/**
  * Inicia el proceso de renderizado y llama a la funcion
  * que dibuja la linea.
  */
@@ -50,6 +44,11 @@ void mouseMotionHandler(int x, int y);
  * el algoritmo de Bresenham.
  */
 void drawLine(int x1, int y1, int x2, int y2);
+
+/**
+ * Dimensiones de la ventana
+ */
+const int WIDTH = 600, HEIGHT = 600;
 
 /**
  * Puntos entre los que se dibujara la linea.
@@ -123,9 +122,19 @@ void drawLine(int x1, int y1, int x2, int y2)
   int xIncrement = dx > 0 ? 1 : -1;
   int yIncrement = dy > 0 ? 1 : -1;
 
+  /*
+    Obtiene el valor absoluto de dx & dy, ya que lo que va
+    a determinar la direccion es xIncrement & yIncrement.
+   */
   dx = abs(dx);
   dy = abs(dy);
-  
+
+  /*
+    Cambia el valor de las constantes dependiendo del valor
+    de la pendiente, poniendolas en funcion de x o y.
+    xFactor & yFactor sirven para saber cual variable se
+    incrementara en 1.
+   */
   if(dx > dy) {
     steps = dx;
     c1 = 2 * dy - 2 * dx;
