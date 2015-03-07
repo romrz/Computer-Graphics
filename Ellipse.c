@@ -1,16 +1,16 @@
 /**
- * Programa que dibuja una circulo utilizando el algoritmo
- * del punto medio para el trazado de circulos.
+ * Programa que dibuja una elipse utilizando el algoritmo
+ * del punto medio para el trazado de elipses.
  *
  * Compilacion:
- * gcc Circle.c -o Circle -lGL -lGLU -lglut -lm
+ * gcc Ellipse.c -o Ellipse -lGL -lGLU -lglut -lm
  * 
  * Ejecucion:
- * ./Circle
+ * ./Ellipse
  *
  * Uso:
  * Da click en cualquier parte de la pantalla y arrastra
- * el mouse para dibujar una circulo.
+ * el mouse para dibujar una elipse.
  *
  * Autor:
  * Romario Ramirez Calderon 1214462c
@@ -22,26 +22,26 @@
 
 /**
  * Inicia el proceso de renderizado y llama a la funcion
- * que dibuja el circulo.
+ * que dibuja la elipse.
  */
 void display();
 
 /**
- * Establece el punto del centro del circulo cuando
+ * Establece el punto del centro de la elipse cuando
  * el usuario presiona el boton del raton.
  */
 void mouseHandler(int button, int state, int x, int y);
 
 /**
- * Establece el radio del circulo a partir del punto recibido
+ * Establece el radio x & y a partir del punto recibido
  * cuando el usuario arrastra el raton.
  */
 void mouseMotionHandler(int x, int y);
 
 /**
- * Dibuja el circulo con el punto del centro y el radio dados.
+ * Dibuja la elipse
  */
-void drawCircle(int x, int y, int r);
+void drawEllipse(int x, int y, int rx, int ry);
 
 /**
  * Dimensiones de la ventana
@@ -51,7 +51,7 @@ const int WIDTH = 600, HEIGHT = 600;
 /**
  * Punto central y radio del circulo
  */
-int xc, yc, rc;
+int X, Y, RX, RY;
   
 int main()
 {
@@ -59,7 +59,7 @@ int main()
   glutInit(&a, NULL);
   glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
   glutInitWindowSize(WIDTH, HEIGHT);
-  glutCreateWindow("Algoritmo del punto medio para circulos");
+  glutCreateWindow("Algoritmo del punto medio para elipses");
 
   glutDisplayFunc(display);
   glutMouseFunc(mouseHandler);
@@ -81,7 +81,7 @@ void display()
   glColor3f(1, 0, 0);
 
   glBegin(GL_POINTS);
-    drawCircle(xc, yc, rc);
+    drawEllipse(X, Y, RX, RY);
   glEnd();
 
   glFlush();
@@ -90,15 +90,9 @@ void display()
 void mouseHandler(int button, int state, int x, int y)
 {
   if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-    xc = x;
-    /*
-      La funcion recibe la posicion verical medida desde arriba de la ventana
-      pero la ventana mide la posicion vertical desde abajo de la ventana,
-      por lo tanto la posicion en la ventana es: HEIGHT - y.
-     */
-    yc = HEIGHT - y;
-
-    rc = 0;
+    X = x;
+    Y = HEIGHT - y;
+    RX = RY = 0;
   }
 
   // Repinta la ventana
@@ -108,40 +102,56 @@ void mouseHandler(int button, int state, int x, int y)
 void mouseMotionHandler(int x, int y)
 {
   y = HEIGHT - y;
-  // Obtiene el radio a partir de la distancia entre centro
-  // y el nuevo punto
-  rc = (int) sqrt( (x - xc)*(x - xc) + (y - yc)*(y - yc) );
+  // Obtiene los radios x & y
+  RX = abs(x - X);
+  RY = abs(y - Y);
 
   // Repinta la ventana
   glutPostRedisplay();
 }
 
-void drawCircle(int x0, int y0, int r)
+void drawEllipse(int x0, int y0, int rx, int ry)
 {
-  int x = 0, y = r, p = 1 - r;
+  /**
+   * Se utiliza el tipo de dato long ya que hay problemas con int
+   * cuando la elipse es grande
+   */
+  long x = 0, y = ry;
+  long rx2 = rx * rx, ry2 = ry * ry;
+  long twoRx2 = 2 * rx2, twoRy2 = 2 * ry2;
+  long p = round(ry2 - rx2 * ry + rx2 * 0.25);
 
-  // Dibuja los puntos iniciales 
-  glVertex2i(x0, y0 + r);
-  glVertex2i(x0 + r, y0);
-  glVertex2i(x0 - r, y0);
-  glVertex2i(x0, y0 - r);
-
-  while(x < y) {
+  // Dibuja los puntos iniciales
+  glVertex2i(x0, y0 + ry);
+  glVertex2i(x0, y0 - ry);
+  
+  while(twoRy2 * x < twoRx2 * y) {
     x++;
-
+    
     if(p < 0)
-      p += 2 * x + 1;
+      p += twoRy2 * x + ry2;
     else
-      p += 2 * (x - --y) + 1;
+      p += twoRy2 * x + ry2 - twoRx2 * (--y);
 
     glVertex2i(x0 + x, y0 + y);
     glVertex2i(x0 - x, y0 + y);
     glVertex2i(x0 + x, y0 - y);
     glVertex2i(x0 - x, y0 - y);
+  }
+  
+  p = round(ry2 * (x + 0.5) * (x + 0.5) + rx2 * (y - 1) * (y - 1) - rx2 * ry2);
+
+  while(y > 0) {
+    y--;
     
-    glVertex2i(x0 + y, y0 + x);
-    glVertex2i(x0 - y, y0 + x);
-    glVertex2i(x0 + y, y0 - x);
-    glVertex2i(x0 - y, y0 - x);
+    if(p > 0)
+      p += -twoRx2 * y + rx2;
+    else
+      p += twoRy2 * (++x) - twoRx2 * y + rx2;
+
+    glVertex2i(x0 + x, y0 + y);
+    glVertex2i(x0 - x, y0 + y);
+    glVertex2i(x0 + x, y0 - y);
+    glVertex2i(x0 - x, y0 - y);
   }
 }
