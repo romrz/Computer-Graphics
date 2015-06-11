@@ -1,0 +1,33 @@
+#include "Matrix.h"
+#include <stdexcept>
+
+Matrix operator*(const Matrix& a, const Matrix& b)
+{
+  if(a.mC != b.mR)
+    throw std::runtime_error("Dimension mismatch.");
+
+  int rows1 = a.mR;
+  int cols1 = a.mC;
+  int cols2 = b.mC;
+
+  Matrix result(rows1, cols2);
+
+  for (int k = 0; k < rows1; k++)
+    for (int i = 0; i < cols2; i++)
+      for (int j = 0; j < cols1; j++)
+	result(k, i) += a(k, j) * b(j, i);
+
+  return result;
+}
+
+Point operator*(const Matrix& m, const Point& p)
+{
+  Point r;
+
+  r.x = m(0,0)*p.x + m(0,1)*p.y + m(0,2)*p.z + m(0,3)*p.w;
+  r.y = m(1,0)*p.x + m(1,1)*p.y + m(1,2)*p.z + m(1,3)*p.w;
+  r.z = m(2,0)*p.x + m(2,1)*p.y + m(2,2)*p.z + m(2,3)*p.w;
+  r.w = m(3,0)*p.x + m(3,1)*p.y + m(3,2)*p.z + m(3,3)*p.w;
+  
+  return r;
+}
